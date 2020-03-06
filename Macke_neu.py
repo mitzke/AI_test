@@ -101,7 +101,7 @@ def weiterwuerfeln(anzahl_restwuerfel):
     points, wurf_neu = punkte(wurf)
     return points, wurf_neu
 
-    wurfzahl = 1
+#    wurfzahl = 1
 #for i in range(1000):
 #    Gesamtpunkte = 0
 #    points, wurf_neu = wuerfeln(5)
