@@ -4,7 +4,7 @@ import numpy as np
 
 def wuerfeln (anzahl_wuerfel):
     wurf = sorted([random.randint(1, 6) for i in range(anzahl_wuerfel)])
-    print (wurf)
+    #print (wurf)
     points, wurf_neu = punkte(wurf)
     return points, wurf_neu
 
@@ -91,13 +91,13 @@ def punkte (wurf):
     ########################################################################
     ##Check auf Macke auf Schuss  TODO
     ########################################################################
-    print ("Wurfpunkte",Gesamtpunkte)
-    print ("Restwuerfel",wurf_neu)
+    #print ("Wurfpunkte",Gesamtpunkte)
+    #print ("Restwuerfel",wurf_neu)
     return Gesamtpunkte, wurf_neu
 
 def weiterwuerfeln(anzahl_restwuerfel):
     wurf = sorted([random.randint(1, 6) for i in range(anzahl_restwuerfel)])
-    print (wurf)
+    #print (wurf)
     points, wurf_neu = punkte(wurf)
     return points, wurf_neu
 
