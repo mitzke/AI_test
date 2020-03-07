@@ -6,50 +6,84 @@ import random
 import Macke_neu as macke
 
 
+
 class AItest(gym.Env):
     metadata = {'render.modes': ['human']}
     WUERFELN = 1
-    AUFHOEREN = 2
+    AUFHOEREN = 0
     def __init__(self):
         n_actions = 2
-        self.points, self.wurf_neu = macke.wuerfeln(5)
+        self.wurfpunkte = 0
+        self.wurfnummer = 1
+        self.rundennummer = 1
+        self.rundenpunkte = 0
+        self.gesamtpunkte = 0
+        self.wurf_neu = [0,0,0,0,0]
+        self.geschrieben = 0
         self.action_space = spaces.Discrete(n_actions)
         # The observation will be the current points
-        self.observation_space = spaces.Box(low=0, high=1000
+        self.observation_space = spaces.Box(low=0, high=1000,
                                         shape=(1,), dtype=np.float32)
 
 
     def step(self, action):
-
         if action == self.WUERFELN:
-          self.points, self.wurf_neu = macke.weiterwuerfeln(len(self.wurf_neu))
+          self.geschrieben = 0
+          if len(self.wurf_neu) == 0:
+            self.wurfpunkte, self.wurf_neu = macke.weiterwuerfeln(5)
+            self.wurfnummer +=1
+            if self.wurfpunkte >0:
+              self.rundenpunkte += self.wurfpunkte
+            else:
+              self.rundenpunkte += 1000
+          else:
+            self.wurfpunkte, self.wurf_neu = macke.weiterwuerfeln(len(self.wurf_neu))
+            self.wurfnummer +=1
+            if self.wurfpunkte >0:
+              self.rundenpunkte += self.wurfpunkte
+            else:
+              self.rundenpunkte = 0
+              self.rundennummer =1
+              self.wurfnummer =1
+              self.wurfpunkte = 0
+              self.wurf_neu = [0,0,0,0,0]
+              
         elif action == self.AUFHOEREN:
-          print ("Aufhören")
+          if self.geschrieben == 1:
+            self.gesamtpunkte -= 100
+          else:
+            self.gesamtpunkte += self.rundenpunkte
+            self.rundenpunkte = 0
+            self.wurfpunkte = 0
+            self.rundennummer += 1
+            self.wurfnummer = 1
+            self.wurf_neu = [0,0,0,0,0]
+            self.geschrieben = 1
+            #print ("Aufhören, Gesamtpunkte =", self.gesamtpunkte)
         else:
           raise ValueError("Received invalid action={} which is not part of the action space".format(action))
 
         # Are we at the left of the grid?
-        done = bool(self.points == 1000)
-
+        done = bool(self.gesamtpunkte > 5000)
+        if done:
+          print ("gewonnen nach ", self.rundennummer, "Runden")
+        
         # Null reward everywhere except when reaching the goal (left of the grid)
-        reward = self.points
 
         # Optionally we can pass additional info, we are not using that for now
         info = {}
-
-        return self.points reward, done, info
+        reward = self.gesamtpunkte
+        return np.array([self.wurfpunkte]).astype(np.float32), reward, done, info
 
 
     def reset(self):
-        # Reset the state of the environment to an initial state
         self.wurfpunkte = 0
-        self.Gesamtpunkte = 0
-        self.Wurfzahl = 1
-        self.Zwischenstand = 0
-        self.wurf = []
-        done = True
-  
-        return  done
+        self.wurfnummer = 1
+        self.rundennummer = 1
+        self.rundenpunkte = 0
+        self.gesamtpunkte = 0
+        return np.array([self.wurfpunkte]).astype(np.float32)
+
 
     
     def render(self, mode='human'):
@@ -57,4 +91,3 @@ class AItest(gym.Env):
     
     def close(self):
         pass
-

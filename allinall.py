@@ -22,6 +22,7 @@ class AItest(gym.Env):
         self.rundenpunkte = 0
         self.gesamtpunkte = 0
         self.wurf_neu = [0,0,0,0,0]
+        self.geschrieben = 0
         self.action_space = spaces.Discrete(n_actions)
         # The observation will be the current points
         self.observation_space = spaces.Box(low=0, high=1000,
@@ -30,6 +31,7 @@ class AItest(gym.Env):
 
     def step(self, action):
         if action == self.WUERFELN:
+          self.geschrieben = 0
           if len(self.wurf_neu) == 0:
             self.wurfpunkte, self.wurf_neu = macke.weiterwuerfeln(5)
             self.wurfnummer +=1
@@ -50,11 +52,17 @@ class AItest(gym.Env):
               self.wurf_neu = [0,0,0,0,0]
               
         elif action == self.AUFHOEREN:
-          self.gesamtpunkte += self.rundenpunkte
-          self.wurfpunkte = 0
-          self.rundennummer += 1
-          self.wurfnummer = 1
-          #print ("Aufhören, Gesamtpunkte =", self.gesamtpunkte)
+          if self.geschrieben == 1:
+            self.gesamtpunkte -= 100
+          else:
+            self.gesamtpunkte += self.rundenpunkte
+            self.rundenpunkte = 0
+            self.wurfpunkte = 0
+            self.rundennummer += 1
+            self.wurfnummer = 1
+            self.wurf_neu = [0,0,0,0,0]
+            self.geschrieben = 1
+            #print ("Aufhören, Gesamtpunkte =", self.gesamtpunkte)
         else:
           raise ValueError("Received invalid action={} which is not part of the action space".format(action))
 
@@ -101,7 +109,7 @@ for step in range(n_steps):
   print("Step {}".format(step + 1))
   print("Action: ", action)
   obs, reward, done, info = env.step(action)
-  print('obs=', obs, 'reward=', reward, 'done=', done)
+  print('obs=', obs, 'reward=', reward, 'done=', done, 'info=', info)
   env.render()
   if done:
     # Note that the VecEnv resets automatically
