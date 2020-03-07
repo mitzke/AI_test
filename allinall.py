@@ -46,7 +46,7 @@ class AItest(gym.Env):
               self.rundenpunkte += self.wurfpunkte
             else:
               self.rundenpunkte = 0
-              self.rundennummer =1
+              #self.rundennummer =1
               self.wurfnummer =1
               self.wurfpunkte = 0
               self.wurf_neu = [0,0,0,0,0]
@@ -54,6 +54,7 @@ class AItest(gym.Env):
         elif action == self.AUFHOEREN:
           if self.geschrieben == 1:
             self.gesamtpunkte -= 100
+            print ("doppelt geschrieben")
           else:
             self.gesamtpunkte += self.rundenpunkte
             self.rundenpunkte = 0
@@ -62,7 +63,7 @@ class AItest(gym.Env):
             self.wurfnummer = 1
             self.wurf_neu = [0,0,0,0,0]
             self.geschrieben = 1
-            #print ("Aufhören, Gesamtpunkte =", self.gesamtpunkte)
+            print ("Aufhören, Gesamtpunkte =", self.gesamtpunkte, "Rundennummer:", self.rundennummer)
         else:
           raise ValueError("Received invalid action={} which is not part of the action space".format(action))
 
@@ -75,7 +76,7 @@ class AItest(gym.Env):
 
         # Optionally we can pass additional info, we are not using that for now
         info = {}
-        reward = self.gesamtpunkte
+        reward = self.gesamtpunkte/self.rundennummer
         return np.array([self.wurfpunkte]).astype(np.float32), reward, done, info
 
 
@@ -85,6 +86,8 @@ class AItest(gym.Env):
         self.rundennummer = 1
         self.rundenpunkte = 0
         self.gesamtpunkte = 0
+        self.wurf_neu = [0,0,0,0,0]
+        self.geschrieben = 0
         return np.array([self.wurfpunkte]).astype(np.float32)
 
 
@@ -109,7 +112,7 @@ for step in range(n_steps):
   print("Step {}".format(step + 1))
   print("Action: ", action)
   obs, reward, done, info = env.step(action)
-  print('obs=', obs, 'reward=', reward, 'done=', done, 'info=', info)
+  print('obs=', obs, 'reward=', reward, 'done=', done)
   env.render()
   if done:
     # Note that the VecEnv resets automatically
