@@ -26,7 +26,7 @@ class AItest(gym.Env):
         self.action_space = spaces.Discrete(n_actions)
         # The observation will be the current points
         self.observation_space = spaces.Box(low=0, high=1000,
-                                        shape=(1,), dtype=np.float32)
+                                        shape=(4,), dtype=np.float32)
 
 
     def step(self, action):
@@ -77,7 +77,7 @@ class AItest(gym.Env):
         # Optionally we can pass additional info, we are not using that for now
         info = {}
         reward = self.gesamtpunkte/self.rundennummer
-        return np.array([self.wurfpunkte]).astype(np.float32), reward, done, info
+        return np.array([self.wurfpunkte, len(self.wurf_neu), self.rundenpunkte, self.gesamtpunkte]).astype(np.float32), reward, done, info
 
 
     def reset(self):
