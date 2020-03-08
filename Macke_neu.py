@@ -97,7 +97,7 @@ def punkte (wurf):
 
 def weiterwuerfeln(anzahl_restwuerfel):
     wurf = sorted([random.randint(1, 6) for i in range(anzahl_restwuerfel)])
-    print (wurf)
+    #print (wurf)
     points, wurf_neu = punkte(wurf)
     return points, wurf_neu
 
