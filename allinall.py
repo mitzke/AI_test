@@ -117,5 +117,5 @@ for step in range(n_steps):
   if done:
     # Note that the VecEnv resets automatically
     # when a done signal is encountered
-    print("Goal reached!", "reward=", reward)
+    print("Goal rreached!", "reward=", reward)
     break
