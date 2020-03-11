@@ -59,6 +59,7 @@ class AItest(gym.Env):
             self.rundennummer +=1
             print ("doppelt geschrieben")
           else:
+            #print ("Wurfzahl=",self.wurfnummer, "restwuerfel:", self.wurf_neu)
             self.gesamtpunkte += self.rundenpunkte
             self.rundenpunkte = 0
             self.wurfpunkte = 0
@@ -74,7 +75,7 @@ class AItest(gym.Env):
         done = bool(self.gesamtpunkte > 5000)
         if done:
           global rundenanzahl
-          print ("gewonnen nach ", self.rundennummer, "Runden")
+          print ("gewonnen nach ", self.rundennummer, "Runden. Reward:")
           rundenanzahl = np.append(rundenanzahl, self.rundennummer)
           self.rundennummer = 1
         
@@ -82,7 +83,9 @@ class AItest(gym.Env):
 
         # Optionally we can pass additional info, we are not using that for now
         info = {}
-        reward = -self.rundennummer
+        reward = -self.rundennummer*(1/(self.rundenpunkte+1))
+        #print (reward)
+        
         return np.array([self.wurfpunkte, len(self.wurf_neu), self.rundenpunkte]).astype(np.float32), reward, done, info
 
 
@@ -109,8 +112,10 @@ env = AItest()
 env = Monitor(env, filename=None, allow_early_resets=True)
 env = DummyVecEnv([lambda: env])
 #Train the agent and save
-#model = ACKTR('MlpPolicy', env, verbose=1).learn(20000)
+#model = ACKTR('MlpPolicy', env, verbose=1).learn(50000)
+#print ("learning done")
 #model.save('Macke_AI')
+#print ("save done")
 # run with saved agent
 model =ACKTR.load('Macke_AI')
 
